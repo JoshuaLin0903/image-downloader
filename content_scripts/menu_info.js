@@ -36,6 +36,10 @@ function origUrl(url) {
     if(u.search == ""){ u.search = "?original"; }
     else{ u.search += "&original"; }
   }
+  // naver post case
+  else if (u.hostname == "post-phinf.pstatic.net") {
+    u.search = "";
+  }
 
   return u.href;
 }

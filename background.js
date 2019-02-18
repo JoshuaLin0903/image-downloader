@@ -51,6 +51,13 @@ function onError(err) {
   console.log('image-downloader: error:', err);
 }
 
+function getHost(str){
+  var begin = str.search("://") + 3;
+  var end = str.indexOf("/", begin);
+  str = str.slice(begin, end);
+  return str
+}
+
 browser.contextMenus.create({
   id: "img",
   title: "Image Downloader",
@@ -80,6 +87,11 @@ browser.contextMenus.create({
 
 
 browser.contextMenus.onClicked.addListener(function(info, tab) {
+  // naver picture case
+  if(getHost(info.pageUrl) === "m.entertain.naver.com"){
+    console.log(info);
+  }
+  
   if(lastOrigUrl === "" || fileName === "") {
     // Indicates the right click menu has been 'cleared' by clicking on a non-recognized thing
     return;
