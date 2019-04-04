@@ -40,6 +40,10 @@ function origUrl(url) {
   else if (u.hostname == "post-phinf.pstatic.net") {
     u.search = "";
   }
+  // naver picture case
+  else if(u.hostname == "mimgnews.pstatic.net" || u.hostname == "ssl.pstatic.net"){
+    u.search = "";
+  }
 
   return u.href;
 }
@@ -78,7 +82,25 @@ function getFileName(url) {
   return filename;
 }
 
+function getHost(str){
+  var begin = str.search("://") + 3;
+  var end = str.indexOf("/", begin);
+  str = str.slice(begin, end);
+  return str
+}
+
 document.addEventListener('contextmenu', function(ev) {
+  // naver picture case
+  if(document.location.hostname === "m.entertain.naver.com" && document.location.pathname === "/entertain"){
+    var x = document.querySelector("div[style='left: 0px;']").querySelector("img").src;
+    if(x === "") {
+      return;
+    }
+    let fileName = getFileName(x);
+    browser.runtime.sendMessage({OrigUrl: origUrl(x), fileName: fileName});
+    return;
+  }
+
   let el = ev.target;
   if(el.tagName == "IMG") {
     if(el.src === "") {

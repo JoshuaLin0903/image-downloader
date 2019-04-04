@@ -87,11 +87,6 @@ browser.contextMenus.create({
 
 
 browser.contextMenus.onClicked.addListener(function(info, tab) {
-  // naver picture case
-  if(getHost(info.pageUrl) === "m.entertain.naver.com"){
-    console.log(info);
-  }
-  
   if(lastOrigUrl === "" || fileName === "") {
     // Indicates the right click menu has been 'cleared' by clicking on a non-recognized thing
     return;
