@@ -59,8 +59,11 @@ function getFileName(url) {
     filename = filename.slice(ndx + 1);
   }
 
+  if (filename === ""){
+    filename = "img.jpg";
+  }
   // twitter case
-  if (u.hostname == "pbs.twimg.com") {
+  else if (u.hostname == "pbs.twimg.com") {
     ndx = filename.lastIndexOf(":");
     if(ndx >= 0) {
       filename = filename.slice(0, ndx);
@@ -103,16 +106,19 @@ document.addEventListener('contextmenu', function(ev) {
 
   let el = ev.target;
   if(el.tagName == "IMG") {
+    //console.log("IMG");
     if(el.src === "") {
       return;
     }
     // TODO: maybe we should validate it's really a twitter url
    
     let fileName = getFileName(el.src);
+    //console.log(fileName);
     browser.runtime.sendMessage({OrigUrl: origUrl(el.src), fileName: fileName});
     return;
   }
   if(el.parentElement && el.parentElement.classList.contains("Gallery-content")) {
+    //console.log("gallery");
     let media = el.parentElement.querySelector(".Gallery-media > .media-image");
     if(media === null) {
       return;
