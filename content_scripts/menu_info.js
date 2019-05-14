@@ -60,7 +60,7 @@ function getFileName(url) {
   }
 
   if (filename === ""){
-    filename = "img.jpg";
+    filename = Date.now().toString() + ".jpg";
   }
   // twitter case
   else if (u.hostname == "pbs.twimg.com") {
