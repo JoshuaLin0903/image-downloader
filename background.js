@@ -41,21 +41,31 @@ browser.runtime.onMessage.addListener(function(ev) {
   }
 });
 
+function getHost(str){
+  var begin = str.search("://") + 3;
+  var end = str.indexOf("/", begin);
+  str = str.slice(begin, end);
+  return str
+}
+
 function onCreated(n) {
   if (browser.runtime.lastError) {
     console.log('image-downloader: error:', browser.runtime.lastError);
   }
 }
 
-function onError(err) {
-  console.log('image-downloader: error:', err);
+function onGot(item) {
+  var color = "blue";
+  if (item.color) {
+    color = item.color;
+  }
 }
 
-function getHost(str){
-  var begin = str.search("://") + 3;
-  var end = str.indexOf("/", begin);
-  str = str.slice(begin, end);
-  return str
+var getting = browser.storage.sync.get("color");
+getting.then(onGot, onError);
+
+function onError(err) {
+  console.log('image-downloader: error:', err);
 }
 
 browser.contextMenus.create({

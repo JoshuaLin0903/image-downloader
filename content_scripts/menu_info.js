@@ -85,12 +85,7 @@ function getFileName(url) {
   return filename;
 }
 
-function getHost(str){
-  var begin = str.search("://") + 3;
-  var end = str.indexOf("/", begin);
-  str = str.slice(begin, end);
-  return str
-}
+
 
 document.addEventListener('contextmenu', function(ev) {
   // naver picture case
