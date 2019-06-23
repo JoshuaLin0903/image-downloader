@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "image-downloader",
   "description": "original tool by \"twitter-image-helper\", testing...",
-  "version": "0.2.1",
+  "version": "0.2.3",
 
   "background": {
     "scripts": ["background.js"]
@@ -22,8 +22,7 @@
   }],
 
   "options_ui": {
-    "page": "settings/options.html",
-    "open_in_tab": true
+    "page": "settings/options.html"
   },
 
   "applications": {
