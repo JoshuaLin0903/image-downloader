@@ -20,6 +20,7 @@ window.browser = (() => {
 
 var lastOrigUrl = null;
 var fileName = null;
+var filePrefix = "";
 
 // The content-script -> background communication is used because it's
 // inconvenient to access the page dom here and, furthermore, the 'contextMenu
@@ -41,6 +42,16 @@ browser.runtime.onMessage.addListener(function(ev) {
   }
 });
 
+function firstRun(details){
+  if (details.reason === 'install' || details.reason === 'update') {
+    chrome.storage.local.get("prefixList", function(result){
+      if (!result.prefixList || (result.prefixList.length == 0)){
+        chrome.storage.local.set({prefixList: []});
+      }
+    })
+  }
+}
+
 function getHost(str){
   var begin = str.search("://") + 3;
   var end = str.indexOf("/", begin);
@@ -54,47 +65,113 @@ function onCreated(n) {
   }
 }
 
-function onGot(item) {
-  var color = "blue";
-  if (item.color) {
-    color = item.color;
-  }
-}
-
-var getting = browser.storage.sync.get("color");
-getting.then(onGot, onError);
-
 function onError(err) {
   console.log('image-downloader: error:', err);
 }
 
-browser.contextMenus.create({
-  id: "img",
-  title: "Image Downloader",
-  contexts: ["all"],
-}, onCreated);
+function download_text(){
+  var download_text = "Download";
+  if(filePrefix != ""){
+    download_text += " (prefix: " + filePrefix + ")";
+  }
+  return download_text;
+}
 
-browser.contextMenus.create({
-  id: "img-open",
-  title: "Open Original (tab)",
-  parentId: "img",
-  contexts: ["all"],
-}, onCreated);
+function makePrifixMenu(){
+  browser.contextMenus.create({
+    id: "img-download-prefix",
+    title: "Change prefix",
+    parentId: "img",
+    contexts: ["all"],
+  }, onCreated);
 
-browser.contextMenus.create({
-  id: "img-open-inplace",
-  title: "Open Original",
-  parentId: "img",
-  contexts: ["all"],
-}, onCreated);
+  browser.contextMenus.create({
+    type: "radio",
+    id: "prefix-reset",
+    title: "Clear prefix",
+    parentId: "img-download-prefix",
+    contexts: ["all"],
+  }, onCreated);
 
-browser.contextMenus.create({
-  id: "img-download",
-  title: "Download Original",
-  parentId: "img",
-  contexts: ["all"],
-}, onCreated);
+  chrome.storage.local.get("prefixList", function(result){
+    for (var i = 0; i < result.prefixList.length; i++){
+      if(result.prefixList[i] === filePrefix){
+        browser.contextMenus.create({
+          type: "radio",
+          checked: true,
+          id: result.prefixList[i],
+          title: result.prefixList[i],
+          parentId: "img-download-prefix",
+          contexts: ["all"],
+        }, onCreated);
+      }
+      else{
+        browser.contextMenus.create({
+          type: "radio",
+          id: result.prefixList[i],
+          title: result.prefixList[i],
+          parentId: "img-download-prefix",
+          contexts: ["all"],
+        }, onCreated);
+      }
+    }
+  })
+}
 
+function makeMenuItems(){
+  browser.contextMenus.create({
+    id: "img",
+    title: "Image Downloader",
+    contexts: ["all"],
+  }, onCreated);
+
+  browser.contextMenus.create({
+    id: "img-open",
+    title: "Open Original (tab)",
+    parentId: "img",
+    contexts: ["all"],
+  }, onCreated);
+
+  browser.contextMenus.create({
+    id: "img-open-inplace",
+    title: "Open Original",
+    parentId: "img",
+    contexts: ["all"],
+  }, onCreated);
+
+  browser.contextMenus.create({
+    id: "img-download",
+    title: download_text(),
+    parentId: "img",
+    contexts: ["all"],
+  }, onCreated);
+
+  makePrifixMenu();
+}
+
+function refershMenuItems(){
+  browser.contextMenus.remove("img-download-prefix");
+  makePrifixMenu();
+}
+
+function makeMenu(f){
+  var gettingBrowserInfo = browser.runtime.getBrowserInfo();
+  gettingBrowserInfo.then(f);
+}
+
+browser.runtime.onInstalled.addListener(firstRun);
+makeMenu(makeMenuItems);
+
+browser.runtime.onMessage.addListener(function(message){
+  if(message){
+  switch (message.type){
+    case "rebuildMenu":	
+      console.log("rebuildMenu");
+      makeMenu(refershMenuItems);
+      break;
+  }
+}
+});
 
 browser.contextMenus.onClicked.addListener(function(info, tab) {
   if(lastOrigUrl === "" || fileName === "") {
@@ -126,6 +203,23 @@ browser.contextMenus.onClicked.addListener(function(info, tab) {
       });
       downloading.then(() => {}, onError);
       break;
+    default:
+      if(info.menuItemId === "prefix-reset"){
+        filePrefix = "";
+      }
+      else{
+        filePrefix = info.menuItemId;
+      }
+      
+      browser.contextMenus.update("img-download",{
+        title: download_text()
+      });
+
+      var downloading = startDownload({
+        url: lastOrigUrl,
+        filename: fileName,
+      });
+      downloading.then(() => {}, onError);
   }
 });
 
@@ -134,7 +228,10 @@ browser.contextMenus.onClicked.addListener(function(info, tab) {
 // the only bit that differs between the two apis.
 // Note: the mozilla/webextension-polyfill module could also be used, but it's rather heavy.
 function startDownload(url) {
-  const cleanedFilename = fileName.replace(/[^a-zA-Z0-9._-]/g, '_');
+  if(filePrefix != ""){
+    fileName = "_" + fileName;
+  }
+  const cleanedFilename = (filePrefix + fileName).replace(/[^a-zA-Z0-9._-]/g, '_');
   const downloadObj = {
     url: lastOrigUrl,
     filename: cleanedFilename,
