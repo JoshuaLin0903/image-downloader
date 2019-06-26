@@ -1,5 +1,5 @@
 # image-downloader
-A webextension to make opening/downloading original(higher quaitiy) images easier.
+A webextension to make opening/downloading original(higher quaitiy) images and images organization easier.
 
 ## supported hostnames
 - `pbs.twimg.com` (twitter)
