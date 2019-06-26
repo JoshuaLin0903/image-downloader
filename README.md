@@ -18,7 +18,7 @@ When downloading a picture, user can choose prefix from the "Change prefix" menu
 Note that, the extension can memorize the last prefix used, and will add that prefix to the following downloads.
 (Which means, if you wish to download several pictures with the same prefix, you don't need to go to "Change prefix" everytime.)
 
-### TODO...
+## TODO...
 - [ ] enable/disable Open Original(inplace) option
 - [ ] Nested prefix list
 - [ ] enable/disable prefix option
