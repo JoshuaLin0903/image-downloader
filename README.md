@@ -2,7 +2,7 @@
 A webextension to make opening/downloading original(higher quaitiy) images and images organization easier.
 
 ## Getting Started
-You can download the Firefox addons [here](https://addons.mozilla.org/firefox/addon/image-download-helper/)
+You can download the Firefox addons [here](https://addons.mozilla.org/firefox/addon/image-download-helper/).
 
 ## supported hostnames
 - `pbs.twimg.com` (twitter)
