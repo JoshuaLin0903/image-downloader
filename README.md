@@ -24,6 +24,9 @@ This project is an original project called [**twitter-image-helper**](https://gi
 - [ ] Nested prefix list
 - [X] enable/disable prefix option
 
+## Contributions
+Feel free to open issues or pull requests!
+
 ## License
 AGPL 3.0
 
