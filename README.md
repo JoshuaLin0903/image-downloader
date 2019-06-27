@@ -20,18 +20,12 @@ Note that, the extension can memorize the last prefix used, and will add that pr
 This project is an original project called [**twitter-image-helper**](https://github.com/euank/twitter-image-helper) by [**Euan Kemp**](https://github.com/euank).
 
 ## TODO...
-<<<<<<< HEAD
-- [x] enable/disable Open Original(inplace) option
-- [ ] Nested prefix list
-- [x] enable/disable prefix option
-=======
 - [X] enable/disable Open Original(inplace) option
 - [ ] Nested prefix list
 - [X] enable/disable prefix option
 
 ## Contributions
 Feel free to open issues or pull requests!
->>>>>>> af1138a250640821bf9e283b6f9b4fc2b582f43a
 
 ## License
 AGPL 3.0
