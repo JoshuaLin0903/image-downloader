@@ -3,25 +3,37 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link href="options.css" rel="stylesheet">
+    <script src="options.js"></script>
   </head>
 
   <body>
-    <h4>Prefix</h4>
-    <div id="current-album-settings">
-        <div id="album-settings-list"><table id="album-list">
-        </table></div>
+    <div id="page-container"> 
+      <div id="main-settings">
+        <h2>Main Settings</h2>
+        <label>Enable Open Original(inplace) option: <input type="checkbox" id="inplaceOpen"></label><br>
+        <label>Enable Prefix option: <input type="checkbox" id="showPrefix"></label><br>
+        <button id="save">Save</button>
+      </div><br>
+      <div id="prefix-menu" class="active">
+        <div class="prefix-box">
+          <h2>Prefix</h2>
+          <div id="prefix-settings-list"><table id="prefix-list">
+          </table></div>
 
-        <br>
-        <div id="add-album-settings">
-            <label>Add prifix:  <input type="text" id="album-name"></label>
-            <button type="button" id="add"> Add </button><br>
-            
-            <!-- <button type="button" id="move">Move to End</button><br>
-            <button type="button" id="fixdefaults">Fix Defaults</button><br> -->
+          <br>
+          <div id="add-prefix-settings">
+              <label>Add prifix:  <input type="text" id="prefix-name"></label>
+              <button id="add"> Add </button><br>
+              
+              <!-- <button type="button" id="move">Move to End</button><br>
+              <button type="button" id="fixdefaults">Fix Defaults</button><br> -->
+          </div>
         </div>
+      </div>
     </div>
 
-    <script src="options.js"></script>
+    
 
   </body>
 

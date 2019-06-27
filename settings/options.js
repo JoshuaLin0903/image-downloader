@@ -1,12 +1,42 @@
 function initializeOptionsMenu() {
-    loadOptionsList();
+    chrome.storage.local.get(["inplaceOpen", "showPrefix"], function(result){
+		document.querySelector("#inplaceOpen").checked = result.inplaceOpen || false;
+        document.querySelector("#showPrefix").checked = result.showPrefix || false;
+        
+        if(result.showPrefix == true){
+            showPrefixMenu();
+            loadOptionsList();
+        }
+        else{
+            hidePrefixMenu();
+        }
+    })
+    
     document.getElementById("add").addEventListener("click", addOption);
+    document.getElementById("save").addEventListener("click", save);
+}
+
+function save() {
+	//save main options locally
+	chrome.storage.local.set({
+		inplaceOpen: document.querySelector("#inplaceOpen").checked,
+		showPrefix: document.querySelector("#showPrefix").checked
+    });
+    console.log(document.querySelector("#showPrefix").checked)
+    if(document.querySelector("#showPrefix").checked === true){
+        showPrefixMenu();
+        loadOptionsList();
+    }
+    else{
+        hidePrefixMenu();
+    }
+	chrome.runtime.sendMessage({type: "rebuildMenu"})
 }
 
 function addOption() {
     chrome.storage.local.get(["prefixList"], function(result){
-        var name = document.querySelector("#album-name").value;
-        document.querySelector("#album-name").value = "";
+        var name = document.querySelector("#prefix-name").value;
+        document.querySelector("#prefix-name").value = "";
         result.prefixList.push(name);
         chrome.storage.local.set({prefixList: result.prefixList});
         loadOptionsList();
@@ -25,8 +55,9 @@ function removeOption() {
 
 function loadOptionsList(){
 	//clears menu-settings-list and creates the list of URLs in a table inside it
-	//clear container div first
-	var menuSettingsList = document.getElementById("album-settings-list");
+    //clear container div first
+    
+	var menuSettingsList = document.getElementById("prefix-settings-list");
 	menuSettingsList.innerHTML = "";
 	
 	chrome.storage.local.get("prefixList", function(result){
@@ -34,17 +65,23 @@ function loadOptionsList(){
 		var temp = document.createElement("div");
 		var addedportion = document.createElement("TABLE");
 		temp.appendChild(addedportion);
-		addedportion.id = "album-list";
+		addedportion.id = "prefix-list";
 		for (var i = 0; i < len; i++){
             var addition = addedportion.insertRow();
-            addition.className = "album-list-row";
+            addition.className = "prefix-list-row";
             addition.id = i;
 
             var textportion = addition.insertCell();
-            textportion.innerHTML =  result.prefixList[i];
+            var text = document.createTextNode(result.prefixList[i])
+            textportion.appendChild(text);
             
             var button = addition.insertCell();
-            button.innerHTML = "<button type=\"button\" name=\"remove\" id=\"" + i + "\">Remove</button>"
+            var btn = document.createElement('input');
+            btn.type = "button";
+            btn.name = "remove";
+            btn.id = i;
+            btn.value = "Remove";
+            button.appendChild(btn);
 		}   
 		document.body.appendChild(addedportion);
 		menuSettingsList.appendChild(addedportion)
@@ -56,6 +93,18 @@ function loadOptionsList(){
     })
     
 	chrome.runtime.sendMessage({type: "rebuildMenu"})
+}
+
+function hidePrefixMenu(){
+    console.log("hide prefix menu")
+	var PrefixMenu = document.getElementById("prefix-menu");
+	PrefixMenu.classList.remove("active")
+}
+
+function showPrefixMenu(){
+    console.log("show prefix menu")
+	var PrefixMenu = document.getElementById("prefix-menu");
+	PrefixMenu.classList.add("active")
 }
 
 document.addEventListener("DOMContentLoaded", initializeOptionsMenu);

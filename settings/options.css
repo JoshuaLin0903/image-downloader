@@ -1,0 +1,30 @@
+*{
+	margin: 0;
+	padding: 0;
+}
+html, body{
+	width: 100%;
+	height: 100%;
+}
+body {
+	color: #000;
+	background: #fff;
+}
+ul {
+	list-style-type: none;	
+}
+h2{
+    line-height: 32px
+}
+label{
+    font-size: 16px
+}
+#main-settings{
+	line-height: 25px
+}
+#prefix-menu{
+    display: none;
+}
+.active {
+	display: unset !important;
+}

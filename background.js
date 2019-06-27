@@ -119,39 +119,55 @@ function makePrifixMenu(){
 }
 
 function makeMenuItems(){
-  browser.contextMenus.create({
-    id: "img",
-    title: "Image Downloader",
-    contexts: ["all"],
-  }, onCreated);
-
-  browser.contextMenus.create({
-    id: "img-open",
-    title: "Open Original (tab)",
-    parentId: "img",
-    contexts: ["all"],
-  }, onCreated);
-
-  browser.contextMenus.create({
-    id: "img-open-inplace",
-    title: "Open Original",
-    parentId: "img",
-    contexts: ["all"],
-  }, onCreated);
-
-  browser.contextMenus.create({
-    id: "img-download",
-    title: download_text(),
-    parentId: "img",
-    contexts: ["all"],
-  }, onCreated);
-
-  makePrifixMenu();
+  chrome.storage.local.get(["inplaceOpen", "showPrefix"], function(result){
+    browser.contextMenus.create({
+      id: "img",
+      title: "Image Downloader",
+      contexts: ["all"],
+    }, onCreated);
+  
+    browser.contextMenus.create({
+      id: "img-open",
+      title: "Open Original (tab)",
+      parentId: "img",
+      contexts: ["all"],
+    }, onCreated);
+  
+    if(result.inplaceOpen){
+      browser.contextMenus.create({
+        id: "img-open-inplace",
+        title: "Open Original",
+        parentId: "img",
+        contexts: ["all"],
+      }, onCreated);
+    }
+    else{
+      browser.contextMenus.remove("img-open-inplace");
+    }
+  
+    browser.contextMenus.create({
+      id: "img-download",
+      title: download_text(),
+      parentId: "img",
+      contexts: ["all"],
+    }, onCreated);
+  
+    if(result.showPrefix){
+      makePrifixMenu();
+    }
+    else{
+      browser.contextMenus.remove("img-download-prefix");
+    }
+  })
 }
 
 function refershMenuItems(){
-  browser.contextMenus.remove("img-download-prefix");
-  makePrifixMenu();
+  filePrefix = "";
+  browser.contextMenus.update("img-download",{
+    title: download_text()
+  });
+  browser.contextMenus.removeAll();
+  makeMenu(makeMenuItems);
 }
 
 function makeMenu(f){
@@ -174,6 +190,18 @@ browser.runtime.onMessage.addListener(function(message){
 });
 
 browser.contextMenus.onClicked.addListener(function(info, tab) {
+  if(info.menuItemId != "img-open" && info.menuItemId != "img-open-inplace" && info.menuItemId != "img-download"){
+    if(info.menuItemId === "prefix-reset"){
+      filePrefix = "";
+    }
+    else{
+      filePrefix = info.menuItemId;
+    }
+    
+    browser.contextMenus.update("img-download",{
+      title: download_text()
+    });
+  }
   if(lastOrigUrl === "" || fileName === "") {
     // Indicates the right click menu has been 'cleared' by clicking on a non-recognized thing
     return;
@@ -196,25 +224,7 @@ browser.contextMenus.onClicked.addListener(function(info, tab) {
         code: `document.location = "${lastOrigUrl}";`,
       });
       break;
-    case "img-download":
-      var downloading = startDownload({
-        url: lastOrigUrl,
-        filename: fileName,
-      });
-      downloading.then(() => {}, onError);
-      break;
     default:
-      if(info.menuItemId === "prefix-reset"){
-        filePrefix = "";
-      }
-      else{
-        filePrefix = info.menuItemId;
-      }
-      
-      browser.contextMenus.update("img-download",{
-        title: download_text()
-      });
-
       var downloading = startDownload({
         url: lastOrigUrl,
         filename: fileName,

@@ -19,9 +19,9 @@ Note that, the extension can memorize the last prefix used, and will add that pr
 (Which means, if you wish to download several pictures with the same prefix, you don't need to go to "Change prefix" everytime.)
 
 ## TODO...
-- [ ] enable/disable Open Original(inplace) option
+- [x] enable/disable Open Original(inplace) option
 - [ ] Nested prefix list
-- [ ] enable/disable prefix option
+- [x] enable/disable prefix option
 
 ## License
 AGPL
