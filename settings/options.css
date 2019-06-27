@@ -25,6 +25,11 @@ label{
 #prefix-menu{
     display: none;
 }
+textarea{
+	resize: none;
+	padding: 10px;
+	font-family: sans-serif
+}
 .active {
 	display: unset !important;
 }

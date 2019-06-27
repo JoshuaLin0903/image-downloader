@@ -2,7 +2,7 @@
 
 <html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
     <link href="options.css" rel="stylesheet">
     <script src="options.js"></script>
   </head>
@@ -13,28 +13,16 @@
         <h2>Main Settings</h2>
         <label>Enable Open Original(inplace) option: <input type="checkbox" id="inplaceOpen"></label><br>
         <label>Enable Prefix option: <input type="checkbox" id="showPrefix"></label><br>
-        <button id="save">Save</button>
+        <button id="save-main-settings"> Save </button>
       </div><br>
       <div id="prefix-menu" class="active">
         <div class="prefix-box">
           <h2>Prefix</h2>
-          <div id="prefix-settings-list"><table id="prefix-list">
-          </table></div>
-
-          <br>
-          <div id="add-prefix-settings">
-              <label>Add prifix:  <input type="text" id="prefix-name"></label>
-              <button id="add"> Add </button><br>
-              
-              <!-- <button type="button" id="move">Move to End</button><br>
-              <button type="button" id="fixdefaults">Fix Defaults</button><br> -->
-          </div>
+          <textarea id="prefix-list" rows="10"></textarea><br>
+          <button id="save-prefix-list"> Save </button>
         </div>
       </div>
     </div>
-
-    
-
   </body>
 
 </html>

@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "image-downloader",
   "description": "This addon provides an additional context menu. This menu allows easier opening of images, even in the gallery view where such images are harder to access. Furthermore, it ensures the original quality image url is opened.\nAnother feature is to add prefix to the filename while downloading. Users can costumize their prefix list in the \"Preference\" page.\nGo to \"Homepage\" for more detail about this addon.",
-  "version": "0.2.6",
+  "version": "0.2.7",
 
   "background": {
     "scripts": ["background.js"]
