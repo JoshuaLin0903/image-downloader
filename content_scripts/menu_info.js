@@ -85,6 +85,21 @@ function getFileName(url) {
   return filename;
 }
 
+function findTwitterVideo(el) {
+  let vidSource = el.querySelectorAll('.PlayableMedia video source');
+  for (let i = 0; i < vidSource.length; i++) {
+    if(vidSource[i] && /mp4$/.test(vidSource[i].src)) {
+      return vidSource[i].src;
+    }
+  }
+  // twitter used to have <video src= instead of <video><source> ...; try this
+  // too in case it still shows up somewhere.
+  let vid = el.querySelector('.PlayableMedia video');
+  if(vid && /mp4$/.test(vid.src)) {
+    return vid.src;
+  }
+  return null;
+}
 
 
 document.addEventListener('contextmenu', function(ev) {
@@ -137,20 +152,3 @@ document.addEventListener('contextmenu', function(ev) {
   // Otherwise it wasn't a twitter url, clear the "open" url
   browser.runtime.sendMessage({OrigUrl: "", fileName: ""});
 });
-
-
-function findTwitterVideo(el) {
-  let vidSource = el.querySelectorAll('.PlayableMedia video source');
-  for (let i = 0; i < vidSource.length; i++) {
-    if(vidSource[i] && /mp4$/.test(vidSource[i].src)) {
-      return vidSource[i].src;
-    }
-  }
-  // twitter used to have <video src= instead of <video><source> ...; try this
-  // too in case it still shows up somewhere.
-  let vid = el.querySelector('.PlayableMedia video');
-  if(vid && /mp4$/.test(vid.src)) {
-    return vid.src;
-  }
-  return null;
-}

@@ -18,30 +18,6 @@ window.browser = (() => {
   }
 })();
 
-var lastOrigUrl = null;
-var fileName = null;
-var filePrefix = "";
-
-// The content-script -> background communication is used because it's
-// inconvenient to access the page dom here and, furthermore, the 'contextMenu
-// -> onClicked' event has no information about the element the right click
-// menu is for.
-// 
-// We listen for the click that probably opened this context menu from the
-// browser-side of things and then send the message over.
-// 
-// I haven't found a reason why this might end up being stale yet, though it's
-// possible there are cases where it will be.
-browser.runtime.onMessage.addListener(function(ev) {
-  if(ev.hasOwnProperty('OrigUrl')) {
-    lastOrigUrl = ev.OrigUrl;
-  }
-  
-  if(ev.hasOwnProperty('fileName')) {
-    fileName = ev.fileName;
-  }
-});
-
 function firstRun(details){
   if (details.reason === 'install' || details.reason === 'update') {
     chrome.storage.local.get("prefixList", function(result){
@@ -118,7 +94,7 @@ function makePrifixMenu(){
   })
 }
 
-function makeMenuItems(){
+function makeMenu(){
   chrome.storage.local.get(["inplaceOpen", "showPrefix"], function(result){
     browser.contextMenus.create({
       id: "img",
@@ -167,23 +143,72 @@ function refershMenuItems(){
     title: download_text()
   });
   browser.contextMenus.removeAll();
-  makeMenu(makeMenuItems);
+  makeMenu();
 }
 
-function makeMenu(f){
-  var gettingBrowserInfo = browser.runtime.getBrowserInfo();
-  gettingBrowserInfo.then(f);
+// startDownload encodes the difference between the chrome and firefox download
+// apis; it does the minimal amount of work to start a download since that's
+// the only bit that differs between the two apis.
+// Note: the mozilla/webextension-polyfill module could also be used, but it's rather heavy.
+function startDownload(url) {
+  if(filePrefix != ""){
+    fileName = "_" + fileName;
+  }
+  const cleanedFilename = (filePrefix + fileName).replace(/[^a-zA-Z0-9._-]/g, '_');
+  const downloadObj = {
+    url: lastOrigUrl,
+    filename: cleanedFilename,
+  };
+  switch (targetBrowser) {
+    case "chrome":
+      return new Promise(function(resolve, reject) {
+        chrome.downloads.download(downloadObj, function(id) {
+          if (id) {
+            resolve(id);
+          } else {
+            reject(browser.runtime.lastError);
+          }
+        });
+      });
+    default:
+      const downloading = browser.downloads.download(downloadObj);
+      return downloading;
+  }
 }
 
 browser.runtime.onInstalled.addListener(firstRun);
-makeMenu(makeMenuItems);
+makeMenu();
+
+var lastOrigUrl = null;
+var fileName = null;
+var filePrefix = "";
+
+// The content-script -> background communication is used because it's
+// inconvenient to access the page dom here and, furthermore, the 'contextMenu
+// -> onClicked' event has no information about the element the right click
+// menu is for.
+// 
+// We listen for the click that probably opened this context menu from the
+// browser-side of things and then send the message over.
+// 
+// I haven't found a reason why this might end up being stale yet, though it's
+// possible there are cases where it will be.
+browser.runtime.onMessage.addListener(function(ev) {
+  if(ev.hasOwnProperty('OrigUrl')) {
+    lastOrigUrl = ev.OrigUrl;
+  }
+  
+  if(ev.hasOwnProperty('fileName')) {
+    fileName = ev.fileName;
+  }
+});
 
 browser.runtime.onMessage.addListener(function(message){
   if(message){
   switch (message.type){
     case "rebuildMenu":	
       console.log("rebuildMenu");
-      makeMenu(refershMenuItems);
+      refershMenuItems();
       break;
   }
 }
@@ -232,33 +257,3 @@ browser.contextMenus.onClicked.addListener(function(info, tab) {
       downloading.then(() => {}, onError);
   }
 });
-
-// startDownload encodes the difference between the chrome and firefox download
-// apis; it does the minimal amount of work to start a download since that's
-// the only bit that differs between the two apis.
-// Note: the mozilla/webextension-polyfill module could also be used, but it's rather heavy.
-function startDownload(url) {
-  if(filePrefix != ""){
-    fileName = "_" + fileName;
-  }
-  const cleanedFilename = (filePrefix + fileName).replace(/[^a-zA-Z0-9._-]/g, '_');
-  const downloadObj = {
-    url: lastOrigUrl,
-    filename: cleanedFilename,
-  };
-  switch (targetBrowser) {
-    case "chrome":
-      return new Promise(function(resolve, reject) {
-        chrome.downloads.download(downloadObj, function(id) {
-          if (id) {
-            resolve(id);
-          } else {
-            reject(browser.runtime.lastError);
-          }
-        });
-      });
-    default:
-      const downloading = browser.downloads.download(downloadObj);
-      return downloading;
-  }
-}
