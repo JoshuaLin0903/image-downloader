@@ -2,5 +2,5 @@
 /*.xpi
 /*.crx
 /*.pem
-/extension_files
+/firefox_extension_files
 /web-ext-artifacts
