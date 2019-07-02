@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
   "name": "image-downloader",
-  "description": "This addon provides an additional context menu. This menu allows easier opening of images, even in the gallery view where such images are harder to access. Furthermore, it ensures the original quality image url is opened.\nAnother feature is to add prefix to the filename while downloading. Users can costumize their prefix list in the \"Preference\" page.\nGo to \"Homepage\" for more detail about this addon.",
-  "version": "0.2.7",
+  "description": "A webextension to make opening/downloading original(higher quaitiy) images and images organization easier.",
+  "version": "0.2.8",
 
   "background": {
     "scripts": ["background.js"]
@@ -12,22 +12,17 @@
     "contextMenus",
     "activeTab",
     "downloads",
-    "storage"
+    "storage",
+    "tabs"
   ],
 
   "content_scripts": [{
-    "matches": ["*://*/*"],
-    "all_frames": true,
-    "js": ["content_scripts/menu_info.js"]
+    "matches": ["<all_urls>"],
+    "js": ["content_scripts/menu_info.js"],
+    "all_frames": true
   }],
 
   "options_ui": {
     "page": "settings/options.html"
-  },
-
-  "applications": {
-    "gecko": {
-      "id": "{3dce92d4-680c-424b-8179-d27527ef20e7}"
-    }
   }
 }

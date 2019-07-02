@@ -8,6 +8,8 @@ window.browser = (() => {
   }
 })();
 
+// console.log("load menu_info");
+
 // origUrl attempts to convert a twitter image url into its ":orig" form.
 function origUrl(url) {
   if(url === null || url === "") {
@@ -18,9 +20,6 @@ function origUrl(url) {
   // twitter case
   if (u.hostname == "pbs.twimg.com") {
     if (u.searchParams.get("format") && u.searchParams.get("name")) {
-      // mobile twitter uses urls like:
-      // https://pbs.twimg.com/media/{id}?format=jpg&name=small
-      // Replacing 'name=small' with 'name=orig' seems to be all that's needed
       u.searchParams.set("name", "orig");
       return u.href;
     }
@@ -101,22 +100,12 @@ function findTwitterVideo(el) {
   return null;
 }
 
-
 document.addEventListener('contextmenu', function(ev) {
-  // naver picture case
-  if(document.location.hostname === "m.entertain.naver.com" && document.location.pathname === "/entertain"){
-    var x = document.querySelector("div[style='left: 0px;']").querySelector("img").src;
-    if(x === "") {
-      return;
-    }
-    let fileName = getFileName(x);
-    browser.runtime.sendMessage({OrigUrl: origUrl(x), fileName: fileName});
-    return;
-  }
-
+  // general case
   let el = ev.target;
+  console.log(el);
   if(el.tagName == "IMG") {
-    //console.log("IMG");
+    console.log("IMG");
     if(el.src === "") {
       return;
     }
@@ -124,17 +113,30 @@ document.addEventListener('contextmenu', function(ev) {
    
     let fileName = getFileName(el.src);
     //console.log(fileName);
-    browser.runtime.sendMessage({OrigUrl: origUrl(el.src), fileName: fileName});
+    chrome.runtime.sendMessage({OrigUrl: origUrl(el.src), fileName: fileName, type: "noObjCase"});
     return;
   }
-  if(el.parentElement && el.parentElement.classList.contains("Gallery-content")) {
-    //console.log("gallery");
+  
+  // twitter gallery case
+  else if(el.parentElement && el.parentElement.classList.contains("Gallery-content")) {
+    console.log("gallery");
     let media = el.parentElement.querySelector(".Gallery-media > .media-image");
     if(media === null) {
       return;
     }
     let fileName = getFileName(media.src);
-    browser.runtime.sendMessage({OrigUrl: origUrl(media.src), fileName: fileName});
+    browser.runtime.sendMessage({OrigUrl: origUrl(media.src), fileName: fileName, type: "noObjCase"});
+    return;
+  }
+
+  // naver picture case
+  else if(document.location.hostname === "m.entertain.naver.com" && document.location.pathname === "/entertain"){
+    var x = document.querySelector("div[style='left: 0px;']").querySelector("img").src;
+    if(x === "") {
+      return;
+    }
+    let fileName = getFileName(x);
+    chrome.runtime.sendMessage({OrigUrl: origUrl(x), fileName: fileName, type: "noObjCase"});
     return;
   }
 
@@ -144,7 +146,7 @@ document.addEventListener('contextmenu', function(ev) {
   if(tweetParent) {
     let vid = findTwitterVideo(tweetParent);
     if(vid) {
-      browser.runtime.sendMessage({OrigUrl: vid, fileName: vid});
+      browser.runtime.sendMessage({OrigUrl: vid, fileName: vid, type: "noObjCase"});
       return;
     }
   }

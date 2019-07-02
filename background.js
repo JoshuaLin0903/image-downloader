@@ -183,38 +183,25 @@ var lastOrigUrl = null;
 var fileName = null;
 var filePrefix = "";
 
-// The content-script -> background communication is used because it's
-// inconvenient to access the page dom here and, furthermore, the 'contextMenu
-// -> onClicked' event has no information about the element the right click
-// menu is for.
-// 
-// We listen for the click that probably opened this context menu from the
-// browser-side of things and then send the message over.
-// 
-// I haven't found a reason why this might end up being stale yet, though it's
-// possible there are cases where it will be.
-browser.runtime.onMessage.addListener(function(ev) {
-  if(ev.hasOwnProperty('OrigUrl')) {
-    lastOrigUrl = ev.OrigUrl;
-  }
-  
-  if(ev.hasOwnProperty('fileName')) {
-    fileName = ev.fileName;
-  }
-});
-
 browser.runtime.onMessage.addListener(function(message){
   if(message){
-  switch (message.type){
-    case "rebuildMenu":	
-      console.log("rebuildMenu");
-      refershMenuItems();
+    switch (message.type){
+      case "rebuildMenu":	
+        console.log("rebuildMenu");
+        refershMenuItems();
+        break;
+      case "noObjCase":
+        console.log("no object")
+        lastOrigUrl = message.OrigUrl;
+        fileName = message.fileName;
+        no_obj = true
       break;
   }
 }
 });
 
 browser.contextMenus.onClicked.addListener(function(info, tab) {
+  // handle prefix change
   if(info.menuItemId != "img-open" && info.menuItemId != "img-open-inplace" && info.menuItemId != "img-download"){
     if(info.menuItemId === "prefix-reset"){
       filePrefix = "";
@@ -227,6 +214,10 @@ browser.contextMenus.onClicked.addListener(function(info, tab) {
       title: download_text()
     });
   }
+
+  console.log("OrigUrl: " + lastOrigUrl);
+  console.log("fileName: " + fileName);
+
   if(lastOrigUrl === "" || fileName === "") {
     // Indicates the right click menu has been 'cleared' by clicking on a non-recognized thing
     return;
