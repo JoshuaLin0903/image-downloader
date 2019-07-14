@@ -13,6 +13,9 @@ body {
 ul {
 	list-style-type: none;	
 }
+#page-container{
+	padding: 15px;
+}
 h2{
     line-height: 32px
 }

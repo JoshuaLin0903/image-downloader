@@ -2,5 +2,6 @@
 /*.xpi
 /*.crx
 /*.pem
+/tutorial
 /firefox_extension_files
-/web-ext-artifacts
+/chrome_extension_files

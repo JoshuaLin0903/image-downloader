@@ -1,3 +1,6 @@
+/******************************/
+/*       Browser Setting      */
+/******************************/
 window.browser = (() => {
   if (typeof browser !== "undefined") {
     return browser;
@@ -10,6 +13,9 @@ window.browser = (() => {
 
 // console.log("load menu_info");
 
+/******************************/
+/*          Functions         */
+/******************************/
 // origUrl attempts to convert a twitter image url into its ":orig" form.
 function origUrl(url) {
   if(url === null || url === "") {
@@ -58,7 +64,7 @@ function getFileName(url) {
     filename = filename.slice(ndx + 1);
   }
 
-  if (filename === ""){
+  if (filename === "" || filename === "img.jpg"){
     filename = Date.now().toString() + ".jpg";
   }
   // twitter case
@@ -103,7 +109,6 @@ function findTwitterVideo(el) {
 document.addEventListener('contextmenu', function(ev) {
   // general case
   let el = ev.target;
-  console.log(el);
   if(el.tagName == "IMG") {
     console.log("IMG");
     if(el.src === "") {
@@ -113,7 +118,7 @@ document.addEventListener('contextmenu', function(ev) {
    
     let fileName = getFileName(el.src);
     //console.log(fileName);
-    chrome.runtime.sendMessage({OrigUrl: origUrl(el.src), fileName: fileName, type: "noObjCase"});
+    chrome.runtime.sendMessage({OrigUrl: origUrl(el.src), fileName: fileName, type: "img_info"});
     return;
   }
   
@@ -125,7 +130,7 @@ document.addEventListener('contextmenu', function(ev) {
       return;
     }
     let fileName = getFileName(media.src);
-    browser.runtime.sendMessage({OrigUrl: origUrl(media.src), fileName: fileName, type: "noObjCase"});
+    browser.runtime.sendMessage({OrigUrl: origUrl(media.src), fileName: fileName, type: "img_info"});
     return;
   }
 
@@ -136,7 +141,7 @@ document.addEventListener('contextmenu', function(ev) {
       return;
     }
     let fileName = getFileName(x);
-    chrome.runtime.sendMessage({OrigUrl: origUrl(x), fileName: fileName, type: "noObjCase"});
+    chrome.runtime.sendMessage({OrigUrl: origUrl(x), fileName: fileName, type: "img_info"});
     return;
   }
 
@@ -146,11 +151,11 @@ document.addEventListener('contextmenu', function(ev) {
   if(tweetParent) {
     let vid = findTwitterVideo(tweetParent);
     if(vid) {
-      browser.runtime.sendMessage({OrigUrl: vid, fileName: vid, type: "noObjCase"});
+      browser.runtime.sendMessage({OrigUrl: vid, fileName: vid, type: "img_info"});
       return;
     }
   }
 
   // Otherwise it wasn't a twitter url, clear the "open" url
-  browser.runtime.sendMessage({OrigUrl: "", fileName: ""});
+  browser.runtime.sendMessage({OrigUrl: "", fileName: "", type: "img_info"});
 });

@@ -1,3 +1,6 @@
+/******************************/
+/*       Browser Setting      */
+/******************************/
 const targetBrowser = (() => {
   if (typeof chrome !== "undefined" && typeof browser !== "undefined") {
     return 'firefox';
@@ -18,6 +21,9 @@ window.browser = (() => {
   }
 })();
 
+/******************************/
+/*          Functions         */
+/******************************/
 function firstRun(details){
   if (details.reason === 'install' || details.reason === 'update') {
     chrome.storage.local.get("prefixList", function(result){
@@ -176,13 +182,19 @@ function startDownload(url) {
   }
 }
 
+/******************************/
+/*          Main Code         */
+/******************************/
+// Make Context Menu
 browser.runtime.onInstalled.addListener(firstRun);
 makeMenu();
 
+// Global Variables
 var lastOrigUrl = null;
 var fileName = null;
 var filePrefix = "";
 
+// Script Listener
 browser.runtime.onMessage.addListener(function(message){
   if(message){
     switch (message.type){
@@ -190,16 +202,15 @@ browser.runtime.onMessage.addListener(function(message){
         console.log("rebuildMenu");
         refershMenuItems();
         break;
-      case "noObjCase":
-        console.log("no object")
+      case "img_info":
         lastOrigUrl = message.OrigUrl;
         fileName = message.fileName;
-        no_obj = true
       break;
   }
 }
 });
 
+// Menu onClicked Listener
 browser.contextMenus.onClicked.addListener(function(info, tab) {
   // handle prefix change
   if(info.menuItemId != "img-open" && info.menuItemId != "img-open-inplace" && info.menuItemId != "img-download"){
