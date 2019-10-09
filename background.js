@@ -143,7 +143,7 @@ function makeMenu(){
   })
 }
 
-function refershMenuItems(){
+function refreshMenuItems(){
   filePrefix = "";
   browser.contextMenus.update("img-download",{
     title: download_text()
@@ -152,15 +152,37 @@ function refershMenuItems(){
   makeMenu();
 }
 
+function setTwtterCredit(){
+  // set Twtter Credit option
+  chrome.storage.local.get(["TwitterCredit"], function(result){
+    Twitter_credit = result.TwitterCredit;
+  })
+}
+
+function SetOptions(){
+  makeMenu();
+  setTwtterCredit();
+}
+
+function refreshSettings(){
+  refreshMenuItems();
+  setTwtterCredit();
+}
+
 // startDownload encodes the difference between the chrome and firefox download
 // apis; it does the minimal amount of work to start a download since that's
 // the only bit that differs between the two apis.
 // Note: the mozilla/webextension-polyfill module could also be used, but it's rather heavy.
 function startDownload(url) {
-  if(filePrefix != ""){
-    fileName = "_" + fileName;
+  if(Twitter_credit && fileCredit != ""){
+    console.log("fileCredit: " + fileCredit);
+    fileName = fileCredit + "-" + fileName;
+    fileCredit = "";
   }
-  const cleanedFilename = (filePrefix + fileName).replace(/[^a-zA-Z0-9._-]/g, '_');
+  if(filePrefix != ""){
+    fileName = filePrefix + "_" + fileName;
+  }
+  const cleanedFilename = fileName.replace(/[^a-zA-Z0-9._-]/g, '_');
   const downloadObj = {
     url: lastOrigUrl,
     filename: cleanedFilename,
@@ -185,26 +207,29 @@ function startDownload(url) {
 /******************************/
 /*          Main Code         */
 /******************************/
-// Make Context Menu
-browser.runtime.onInstalled.addListener(firstRun);
-makeMenu();
-
 // Global Variables
 var lastOrigUrl = null;
 var fileName = null;
 var filePrefix = "";
+var fileCredit = "";
+var Twitter_credit = false;
+
+// Make Context Menu
+browser.runtime.onInstalled.addListener(firstRun);
+SetOptions();
 
 // Script Listener
 browser.runtime.onMessage.addListener(function(message){
   if(message){
     switch (message.type){
-      case "rebuildMenu":	
-        console.log("rebuildMenu");
-        refershMenuItems();
+      case "refreshSettings":	
+        console.log("refreshSettings");
+        refreshSettings();
         break;
       case "img_info":
         lastOrigUrl = message.OrigUrl;
         fileName = message.fileName;
+        fileCredit = message.credit;
       break;
   }
 }
@@ -252,6 +277,21 @@ browser.contextMenus.onClicked.addListener(function(info, tab) {
       });
       break;
     default:
+      // get Twitter credit
+      console.log(Twitter_credit);
+      if(Twitter_credit){
+        if(info.linkUrl === undefined || info.linkUrl === ''){
+          console.warn("Warning: no linkUrl!");
+        }
+        else{
+          let linkurl = new URL(info.linkUrl);
+          if(linkurl.hostname === "twitter.com") {
+            let credit = linkurl.pathname.split('/')[1];
+            fileCredit = credit;
+          }
+        }
+      }
+      // download
       var downloading = startDownload({
         url: lastOrigUrl,
         filename: fileName,

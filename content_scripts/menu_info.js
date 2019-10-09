@@ -109,19 +109,31 @@ function findTwitterVideo(el) {
 document.addEventListener('contextmenu', function(ev) {
   // general case
   let el = ev.target;
+  let locationURL = document.location;
   if(el.tagName == "IMG") {
     console.log("IMG");
     if(el.src === "") {
       return;
     }
-    // TODO: maybe we should validate it's really a twitter url
-   
+    let credit = "";
+    // twitter gallery credit
+    if(locationURL.hostname === "twitter.com"){
+      let spliturl = locationURL.pathname.split('/');
+      if(spliturl[2] === "status"){
+        console.log("Gallery");
+        credit = spliturl[1];
+      }
+    }
+    
+    // get filename
     let fileName = getFileName(el.src);
     //console.log(fileName);
-    chrome.runtime.sendMessage({OrigUrl: origUrl(el.src), fileName: fileName, type: "img_info"});
+    chrome.runtime.sendMessage({OrigUrl: origUrl(el.src), fileName: fileName, credit: credit, type: "img_info"});
     return;
   }
   
+  /*
+  // --- NO NEED SINCE TWITTER UPDATE THEIR WEBSITE IN 2019 ---
   // twitter gallery case
   else if(el.parentElement && el.parentElement.classList.contains("Gallery-content")) {
     console.log("gallery");
@@ -133,6 +145,7 @@ document.addEventListener('contextmenu', function(ev) {
     browser.runtime.sendMessage({OrigUrl: origUrl(media.src), fileName: fileName, type: "img_info"});
     return;
   }
+  */
 
   // naver picture case
   else if(document.location.hostname === "m.entertain.naver.com" && document.location.pathname === "/entertain"){

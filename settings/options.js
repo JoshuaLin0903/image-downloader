@@ -1,7 +1,8 @@
 function initializeOptionsMenu() {
-    chrome.storage.local.get(["inplaceOpen", "showPrefix", "prefixList"], function(result){
+    chrome.storage.local.get(["inplaceOpen", "showPrefix", "TwitterCredit", "prefixList"], function(result){
 		document.querySelector("#inplaceOpen").checked = result.inplaceOpen || false;
         document.querySelector("#showPrefix").checked = result.showPrefix || false;
+        document.querySelector("#TwitterCredit").checked = result.TwitterCredit || false;
         document.getElementById("prefix-list").value = result.prefixList.join('\n') || "";
         
         if(result.showPrefix == true){
@@ -20,7 +21,8 @@ function save_main() {
 	//save main options locally
 	chrome.storage.local.set({
 		inplaceOpen: document.querySelector("#inplaceOpen").checked,
-		showPrefix: document.querySelector("#showPrefix").checked
+        showPrefix: document.querySelector("#showPrefix").checked,
+        TwitterCredit: document.querySelector("#TwitterCredit").checked
     });
     if(document.querySelector("#showPrefix").checked === true){
         showPrefixMenu();
@@ -28,7 +30,7 @@ function save_main() {
     else{
         hidePrefixMenu();
     }
-	chrome.runtime.sendMessage({type: "rebuildMenu"})
+	chrome.runtime.sendMessage({type: "refreshSettings"})
 }
 
 function save_prefix() {
@@ -36,7 +38,7 @@ function save_prefix() {
     prefix_list = data.split('\n')
 
     chrome.storage.local.set({prefixList: prefix_list});
-    chrome.runtime.sendMessage({type: "rebuildMenu"})
+    chrome.runtime.sendMessage({type: "refreshSettings"})
 }
 
 function hidePrefixMenu(){
