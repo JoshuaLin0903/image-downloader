@@ -32,6 +32,7 @@ Example: Band_RADWIMPS-EGUyr2PUYAAu3pd.jpg
 This project is an original project called [**twitter-image-helper**](https://github.com/euank/twitter-image-helper) by [**Euan Kemp**](https://github.com/euank).
 
 ## TODO...
+- [ ] Auto detect source
 - [ ] Image source feature for other cases
 - [ ] Nested prefix list
 
