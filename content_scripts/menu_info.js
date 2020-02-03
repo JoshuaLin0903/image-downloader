@@ -49,6 +49,15 @@ function origUrl(url) {
   else if(u.hostname == "mimgnews.pstatic.net" || u.hostname == "ssl.pstatic.net"){
     u.search = "";
   }
+  // daum blog case
+  else if (/cfile.*\.uf\.daum\.net/.test(u.hostname)) {
+    if(u.pathname.indexOf("original") == -1){
+      ndx = u.pathname.lastIndexOf("image");
+      if(ndx >= 0) {
+        u.pathname = u.pathname.slice(0, ndx) + "original/" + u.pathname.slice(ndx);
+      }
+    }
+  }
 
   return u.href;
 }
@@ -86,6 +95,18 @@ function getFileName(url) {
       filename = filename.slice(0, ndx);
     }
     filename += ".jpg";
+  }
+  // daum blog case
+  else if (/cfile.*\.uf\.daum\.net/.test(u.hostname)) {
+    filename += ".jpg";
+  }
+  // add .jpg
+  else{
+    const extension_array = ['.jpg', '.JPG', '.jpeg', '.JPEG', '.png', '.PNG'];
+    var extension = filename.slice(filename.lastIndexOf("."));
+    if(!extension_array.includes(extension)){
+      filename += ".jpg";
+    }
   }
   return filename;
 }
