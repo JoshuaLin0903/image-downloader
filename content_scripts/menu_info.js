@@ -108,6 +108,12 @@ function getFileName(url) {
       filename += ".jpg";
     }
   }
+
+  // add date for
+  idx = filename.lastIndexOf(".");
+  if(idx < 6){
+    filename = Date.now().toString() + filename;
+  }
   return filename;
 }
 
