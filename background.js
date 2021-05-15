@@ -180,6 +180,11 @@ function startDownload(url) {
     fileCredit = "";
   }
   if(filePrefix != ""){
+    if(filePrefix.substring(0,1) === "="){
+      ndx = filePrefix.lastIndexOf("= ")+1;
+      mdx = filePrefix.lastIndexOf("=");
+      filePrefix = filePrefix.slice(Math.max(ndx, mdx) + 1);
+    }
     fileName = filePrefix + "_" + fileName;
   }
   const cleanedFilename = fileName.replace(/[^a-zA-Z0-9._-]/g, '_');
@@ -230,7 +235,7 @@ browser.runtime.onMessage.addListener(function(message){
         lastOrigUrl = message.OrigUrl;
         fileName = message.fileName;
         fileCredit = message.credit;
-      break;
+        break;
   }
 }
 });
