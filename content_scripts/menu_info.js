@@ -137,6 +137,7 @@ document.addEventListener('contextmenu', function(ev) {
   // general case
   let el = ev.target;
   let locationURL = document.location;
+
   if(el.tagName == "IMG") {
     console.log("IMG");
     if(el.src === "") {
@@ -177,6 +178,17 @@ document.addEventListener('contextmenu', function(ev) {
   // naver picture case
   else if(document.location.hostname === "m.entertain.naver.com" && document.location.pathname === "/entertain"){
     var x = document.querySelector("div[style='left: 0px;']").querySelector("img").src;
+    if(x === "") {
+      return;
+    }
+    let fileName = getFileName(x);
+    chrome.runtime.sendMessage({OrigUrl: origUrl(x), fileName: fileName, type: "img_info"});
+    return;
+  }
+
+  // instagram case
+  else if(document.location.hostname === "www.instagram.com"){
+    var x = el.parentNode.firstChild.firstChild.src;
     if(x === "") {
       return;
     }

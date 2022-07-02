@@ -6,7 +6,7 @@ You can download the Firefox addons [here](https://addons.mozilla.org/firefox/ad
 
 ## Supported Websites (Hostnames)
 - Daum: `t1.daumcdn.net`
-- Instagram: `scontent-tpe1-1.cdninstagram.com`
+- Instagram: `www.instagram.com`
 - Naver: `post-phinf.pstatic.net`, `mimgnews.pstatic.net`, `ssl.pstatic.net`
 - Twitter: `pbs.twimg.com`
 

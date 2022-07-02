@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "image-downloader",
   "description": "A webextension to make opening/downloading original(higher quaitiy) images and images organization easier.",
-  "version": "0.3.0",
+  "version": "0.4.0",
 
   "background": {
     "scripts": ["background.js"]
