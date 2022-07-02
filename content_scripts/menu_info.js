@@ -188,12 +188,16 @@ document.addEventListener('contextmenu', function(ev) {
 
   // instagram case
   else if(document.location.hostname === "www.instagram.com"){
+    // get credit
+    let credit = document.querySelector("._aacl > ._aap6 >.oajrlxb2").innerHTML || "unknown";
+
+    // get file name
     var x = el.parentNode.firstChild.firstChild.src;
     if(x === "") {
       return;
     }
     let fileName = getFileName(x);
-    chrome.runtime.sendMessage({OrigUrl: origUrl(x), fileName: fileName, type: "img_info"});
+    chrome.runtime.sendMessage({OrigUrl: origUrl(x), fileName: fileName, credit: credit, type: "img_info"});
     return;
   }
 

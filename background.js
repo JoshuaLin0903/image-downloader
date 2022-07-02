@@ -174,7 +174,7 @@ function refreshSettings(){
 // the only bit that differs between the two apis.
 // Note: the mozilla/webextension-polyfill module could also be used, but it's rather heavy.
 function startDownload(url) {
-  if(Twitter_credit && fileCredit != ""){
+  if(Twitter_credit && fileCredit != "" && fileCredit != undefined){
     console.log("fileCredit: " + fileCredit);
     fileName = fileCredit + "-" + fileName;
     fileCredit = "";
@@ -291,6 +291,7 @@ browser.contextMenus.onClicked.addListener(function(info, tab) {
         else{
           let linkurl = new URL(info.linkUrl);
           if(linkurl.hostname === "twitter.com") {
+            console.log("Twitter credit");
             let credit = linkurl.pathname.split('/')[1];
             fileCredit = credit;
           }
